@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat</title>
+  <!--suppress HtmlUnknownTarget -->
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="messages"></div>
+<label for="chatInput">
+  <input id="chatInput" type="text" placeholder="Napisz wiadomość..." />
+</label>
+<button id="sendBtn">Send</button>
+
+<!--suppress JSUnresolvedReference -->
+<script>
+  const socket = io("http://localhost:3000");
+  const chatInput = document.getElementById("chatInput");
+  const sendBtn = document.getElementById("sendBtn");
+  const messagesDiv = document.getElementById("messages");
+
+  sendBtn.addEventListener("click", () => {
+  const message = chatInput.value.trim();
+  if (message) {
+    socket.emit("chatMessage", message);
+    chatInput.value = "";
+  }
+  });
+
+  socket.on("chatMessage", (data) => {
+  const newMsg = document.createElement("p");
+  newMsg.textContent = data.from + ": " + data.text;
+  messagesDiv.appendChild(newMsg);
+  });
+</script>
+</body>
+</html>
